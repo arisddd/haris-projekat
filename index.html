@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Allur Business</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">A</div>
+        <div>
+          <div class="brand-name">ALLUR</div>
+          <div class="brand-sub">BUSINESS</div>
+        </div>
+      </div>
+      <nav id="nav">
+        <button class="nav-item active" data-page="dashboard"><span>⌂</span> Dashboard</button>
+        <button class="nav-item" data-page="prihodi"><span>↗</span> Prihodi</button>
+        <button class="nav-item" data-page="rashodi"><span>↘</span> Rashodi</button>
+        <button class="nav-item" data-page="fakture"><span>▤</span> Fakture</button>
+        <button class="nav-item" data-page="klijenti"><span>◉</span> Klijenti</button>
+        <button class="nav-item" data-page="kpr"><span>≡</span> KPR</button>
+        <button class="nav-item" data-page="izvjestaji"><span>⌁</span> Izvještaji</button>
+      </nav>
+      <div class="sidebar-footer">
+        <button id="exportDataBtn" class="ghost-btn full">Izvezi backup</button>
+        <label class="ghost-btn full file-label">Uvezi backup<input id="importDataInput" type="file" accept="application/json" hidden></label>
+        <div class="tiny">Allur Business · lokalni prototip</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1 id="pageTitle">Dashboard</h1>
+          <p id="pageSubtitle">Pregled poslovanja Allur obrta</p>
+        </div>
+        <div class="top-actions">
+          <div class="date-chip" id="todayLabel"></div>
+          <button class="primary-btn" id="quickAddBtn">+ Novi unos</button>
+        </div>
+      </header>
+
+      <section id="page-dashboard" class="page active">
+        <div class="stats-grid">
+          <article class="stat-card"><span>Prihodi ovaj mjesec</span><strong id="statIncome">0 KM</strong><small id="statIncomeCount">0 unosa</small></article>
+          <article class="stat-card"><span>Rashodi ovaj mjesec</span><strong id="statExpense">0 KM</strong><small id="statExpenseCount">0 unosa</small></article>
+          <article class="stat-card accent"><span>Rezultat mjeseca</span><strong id="statProfit">0 KM</strong><small>prihodi − rashodi</small></article>
+          <article class="stat-card"><span>Nenaplaćene fakture</span><strong id="statUnpaid">0 KM</strong><small id="statUnpaidCount">0 faktura</small></article>
+        </div>
+
+        <div class="dashboard-grid">
+          <article class="panel span-2">
+            <div class="panel-head"><div><h3>Prihodi i rashodi</h3><p>Zadnjih 6 mjeseci</p></div></div>
+            <div id="chart" class="chart"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-head"><div><h3>Prihod po usluzi</h3><p>Tekuća godina</p></div></div>
+            <div id="serviceBreakdown" class="breakdown"></div>
+          </article>
+          <article class="panel span-2">
+            <div class="panel-head"><div><h3>Posljednje transakcije</h3><p>Najnoviji prihodi i rashodi</p></div><button class="link-btn" data-go="prihodi">Prikaži sve</button></div>
+            <div class="table-wrap"><table><thead><tr><th>Datum</th><th>Opis</th><th>Kategorija</th><th>Tip</th><th class="right">Iznos</th></tr></thead><tbody id="recentTransactions"></tbody></table></div>
+          </article>
+          <article class="panel">
+            <div class="panel-head"><div><h3>Fakture</h3><p>Status naplate</p></div></div>
+            <div id="invoiceSummary" class="invoice-summary"></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="page-prihodi" class="page">
+        <div class="section-toolbar"><div class="search"><input id="incomeSearch" placeholder="Pretraži prihode..." /></div><button class="primary-btn" id="addIncomeBtn">+ Dodaj prihod</button></div>
+        <article class="panel"><div class="table-wrap"><table><thead><tr><th>Datum</th><th>Klijent</th><th>Opis</th><th>Usluga</th><th>Način plaćanja</th><th class="right">Iznos</th><th></th></tr></thead><tbody id="incomeTable"></tbody></table></div></article>
+      </section>
+
+      <section id="page-rashodi" class="page">
+        <div class="section-toolbar"><div class="search"><input id="expenseSearch" placeholder="Pretraži rashode..." /></div><button class="primary-btn" id="addExpenseBtn">+ Dodaj rashod</button></div>
+        <article class="panel"><div class="table-wrap"><table><thead><tr><th>Datum</th><th>Dobavljač</th><th>Opis</th><th>Kategorija</th><th>Način plaćanja</th><th class="right">Iznos</th><th></th></tr></thead><tbody id="expenseTable"></tbody></table></div></article>
+      </section>
+
+      <section id="page-fakture" class="page">
+        <div class="section-toolbar"><div class="search"><input id="invoiceSearch" placeholder="Pretraži fakture..." /></div><button class="primary-btn" id="addInvoiceBtn">+ Nova faktura</button></div>
+        <article class="panel"><div class="table-wrap"><table><thead><tr><th>Broj</th><th>Datum</th><th>Klijent</th><th>Dospijeće</th><th>Status</th><th class="right">Ukupno</th><th></th></tr></thead><tbody id="invoiceTable"></tbody></table></div></article>
+      </section>
+
+      <section id="page-klijenti" class="page">
+        <div class="section-toolbar"><div class="search"><input id="clientSearch" placeholder="Pretraži klijente..." /></div><button class="primary-btn" id="addClientBtn">+ Novi klijent</button></div>
+        <div id="clientGrid" class="client-grid"></div>
+      </section>
+
+      <section id="page-kpr" class="page">
+        <div class="section-toolbar"><div><h3>Knjiga prihoda i rashoda</h3><p class="muted">Automatski pregled na osnovu evidentiranih prihoda i rashoda.</p></div><button class="secondary-btn" onclick="window.print()">Štampaj / PDF</button></div>
+        <article class="panel"><div class="table-wrap"><table><thead><tr><th>R.br.</th><th>Datum</th><th>Dokument</th><th>Opis</th><th class="right">Prihod</th><th class="right">Rashod</th><th class="right">Saldo</th></tr></thead><tbody id="kprTable"></tbody><tfoot id="kprFoot"></tfoot></table></div></article>
+      </section>
+
+      <section id="page-izvjestaji" class="page">
+        <div class="stats-grid reports">
+          <article class="stat-card"><span>Prihodi tekuće godine</span><strong id="yearIncome">0 KM</strong></article>
+          <article class="stat-card"><span>Rashodi tekuće godine</span><strong id="yearExpense">0 KM</strong></article>
+          <article class="stat-card accent"><span>Rezultat tekuće godine</span><strong id="yearProfit">0 KM</strong></article>
+          <article class="stat-card"><span>Broj aktivnih klijenata</span><strong id="yearClients">0</strong></article>
+        </div>
+        <div class="dashboard-grid">
+          <article class="panel"><div class="panel-head"><div><h3>Top klijenti</h3><p>Po ukupnom prihodu</p></div></div><div id="topClients"></div></article>
+          <article class="panel"><div class="panel-head"><div><h3>Rashodi po kategoriji</h3><p>Tekuća godina</p></div></div><div id="expenseBreakdown" class="breakdown"></div></article>
+          <article class="panel"><div class="panel-head"><div><h3>Brzi izvoz</h3><p>Podaci za računovođu</p></div></div><div class="export-stack"><button class="secondary-btn" id="exportIncomeCsv">Prihodi CSV</button><button class="secondary-btn" id="exportExpenseCsv">Rashodi CSV</button><button class="secondary-btn" id="exportKprCsv">KPR CSV</button></div></article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card">
+      <div class="modal-head"><div><h2 id="modalTitle">Novi unos</h2><p id="modalSubtitle"></p></div><button class="icon-btn" data-close>×</button></div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <template id="transactionFormTemplate">
+    <form id="transactionForm" class="form-grid">
+      <input type="hidden" name="kind" />
+      <label>Datum<input type="date" name="date" required /></label>
+      <label class="entity-label">Klijent<input type="text" name="party" placeholder="Naziv" /></label>
+      <label class="wide">Opis<input type="text" name="description" required placeholder="Opis usluge ili troška" /></label>
+      <label>Kategorija<select name="category"></select></label>
+      <label>Način plaćanja<select name="payment"><option>Banka</option><option>Gotovina</option><option>Kartica</option><option>Ostalo</option></select></label>
+      <label>Iznos (KM)<input type="number" name="amount" min="0" step="0.01" required /></label>
+      <label>Broj dokumenta<input type="text" name="documentNo" placeholder="npr. R-102/26" /></label>
+      <div class="form-actions wide"><button type="button" class="ghost-btn" data-close>Odustani</button><button type="submit" class="primary-btn">Sačuvaj</button></div>
+    </form>
+  </template>
+
+  <template id="clientFormTemplate">
+    <form id="clientForm" class="form-grid">
+      <label>Naziv klijenta<input name="name" required /></label>
+      <label>Kontakt osoba<input name="contact" /></label>
+      <label>Email<input type="email" name="email" /></label>
+      <label>Telefon<input name="phone" /></label>
+      <label>ID broj<input name="idNumber" /></label>
+      <label>PDV broj<input name="vatNumber" /></label>
+      <label class="wide">Adresa<input name="address" /></label>
+      <div class="form-actions wide"><button type="button" class="ghost-btn" data-close>Odustani</button><button type="submit" class="primary-btn">Sačuvaj</button></div>
+    </form>
+  </template>
+
+  <template id="invoiceFormTemplate">
+    <form id="invoiceForm" class="form-grid">
+      <label>Broj fakture<input name="number" required /></label>
+      <label>Klijent<select name="clientId" required></select></label>
+      <label>Datum izdavanja<input type="date" name="date" required /></label>
+      <label>Dospijeće<input type="date" name="dueDate" required /></label>
+      <label>Status<select name="status"><option value="Nacrt">Nacrt</option><option value="Poslano">Poslano</option><option value="Plaćeno">Plaćeno</option></select></label>
+      <label>Napomena<input name="note" placeholder="Opcionalno" /></label>
+      <div class="wide invoice-items">
+        <div class="items-head"><strong>Stavke</strong><button type="button" class="link-btn" id="addInvoiceItem">+ Dodaj stavku</button></div>
+        <div id="invoiceItemsList"></div>
+      </div>
+      <div class="invoice-total wide"><span>Ukupno</span><strong id="invoiceTotalPreview">0,00 KM</strong></div>
+      <div class="form-actions wide"><button type="button" class="ghost-btn" data-close>Odustani</button><button type="submit" class="primary-btn">Sačuvaj fakturu</button></div>
+    </form>
+  </template>
+
+  <script src="app1.js"></script>
+  <script src="app2.js"></script>
+  <script src="app3.js"></script>
+</body>
+</html>
